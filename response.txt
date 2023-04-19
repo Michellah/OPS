@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name MyS3Bucket --template-body file://STD21096.yml  
