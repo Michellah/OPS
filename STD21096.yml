@@ -1,3 +1,6 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Storage stack
+
 Parameters:
   DBName:
     Type: String
