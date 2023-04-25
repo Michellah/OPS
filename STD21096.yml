@@ -1,3 +1,23 @@
+Parameters:
+  DBName:
+    Type: String
+    Default: pgDB
+  DBClass:
+    Default: db.t2.micro
+    Description: Database instance class
+    Type: String
+    ConstraintDescription: must select a valid database instance type.
+  DBAllocatedStorage:
+    Default: "5"
+    Description: The size of the database (Gb)
+    Type: Number
+    MinValue: "5"
+    MaxValue: "6144"
+    ConstraintDescription: must be between 5+
+  SecurityGroup:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: "/my-ssm-parameter/sg"
+
 Resources:
   MyS3Bucket:
     Type: "AWS::S3::Bucket"
@@ -17,3 +37,27 @@ Resources:
       Name: "MyBucketArn"
       Type: "String"
       Value: !GetAtt MyS3Bucket.Arn
+
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Retain
+    Properties:
+      DBName: !Ref DBName
+      AllocatedStorage: 5
+      DBInstanceClass: DBClass
+      Engine: postgres
+      MasterUsername: !Sub "{{resolve:ssm:/ssm_parameter}}"
+      MasterUserPassword: !Sub "{{resolve:ssm:/ssm_password}}"
+      VPCSecurityGroups:
+        - !Ref SecurityGroup
+
+  DatabaseSSM:
+  Type: AWS::SSM::Parameter
+  Properties:
+    Name: "/my-ssm-parameter/sg"
+    Type: String
+    Value: !Sub “jdbc:postgresql://”+${Database endpoint address}+”:”+${Database endpoint port}+”/”+${Database name}
+
+Outputs:
+  DBName:
+    Value: !Ref DBName
