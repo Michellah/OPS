@@ -46,7 +46,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       DBName: !Ref DBName
-      AllocatedStorage: 5
+      AllocatedStorage: DBAllocatedStorage
       DBInstanceClass: DBClass
       Engine: postgres
       MasterUsername: !Sub "{{resolve:ssm:/ssm_parameter}}"
